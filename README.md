@@ -3,7 +3,7 @@ A Discord Bot
 
 This is a Discord bot that will:
 
-Send a Reminder at 3:30pm every friday
+Send a Reminder at 3:30pm every friday 
 Allow users to interact with the bot by using commands:
 !help -> will show a list of available commands
 !8ball - ask a question, and get a magic eight ball response
