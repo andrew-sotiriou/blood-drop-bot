@@ -1,0 +1,17 @@
+{
+  "name": "blood-drop-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "blood-drop-bot.js",
+  "scripts": {
+    "start": "node blood-drop-bot.js",
+  },
+  "engines": { "node": "14.4.0" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrew-sotiriou/blood-drop-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+}
