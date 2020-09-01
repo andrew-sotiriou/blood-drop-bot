@@ -1,6 +1,8 @@
 # blood-drop-bot
 A Discord Bot
 
+This is setup to run off of glitch which required some extra code to keep the bot active 24/7 and the watch file to help stop glitch from saving on every keystroke.
+
 This is a Discord bot that will:
 
 Send a Reminder at 3:30pm every friday  

@@ -2,16 +2,21 @@
   "name": "blood-drop-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "blood-drop-bot.js",
+  "main": "node blood-drop-bot.js",
   "scripts": {
-    "start": "node blood-drop-bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node blood-drop-bot.js"
   },
-  "engines": { "node": "14.4.0" },
+  "engines": { "node": "12.0.0" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/andrew-sotiriou/blood-drop-bot.git"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
+  "dependencies": {
+    "cron": "^1.8.2",
+    "discord.js": "^12.3.1",
+    "express": "^4.17.1"
+  }
 }

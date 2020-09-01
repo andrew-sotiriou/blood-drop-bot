@@ -2,10 +2,22 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const https = require('https');
 const cron = require('cron');
+const http = require('http');
+const express = require('express');
+const app = express();
+
+app.get("/", (request, response) => {
+  response.sendStatus(200);
+});
+app.listen(process.env.PORT);
+setInterval(() => {
+  http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
+}, 280000);
 
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
-
+    const job1 = cron.job('13 9 * * *', () => console.log('STUFF'));
+  job1.start();
     //This should fire every Friday at 3:30pm
     const job = cron.job('30 15 * * 5', () => sendReminder());
     job.start();
@@ -45,33 +57,33 @@ function processCommand(receivedMessage) {
     let fullCommand = receivedMessage.content.substr(1);
     let splitCommand = fullCommand.split(" ");
     let primaryCommand = splitCommand[0];
-    let arguments = splitCommand.slice(1);
+    let args = splitCommand.slice(1);
 
     if (primaryCommand == "help") {
-        helpCommand(arguments, receivedMessage);
+        helpCommand(args, receivedMessage);
     }
     else if (primaryCommand == "8ball") {
-        eightBall(arguments, receivedMessage);
+        eightBall(args, receivedMessage);
     }
     else if (primaryCommand == "rollbones") {
-        rollDice(arguments, receivedMessage);
+        rollDice(args, receivedMessage);
     }
     else if (primaryCommand == "cookie") {
-        fortuneCookie(arguments, receivedMessage);
+        fortuneCookie(args, receivedMessage);
     }
     else if (primaryCommand == "insult") {
-        insult(arguments, receivedMessage);
+        insult(args, receivedMessage);
     }
     else {
         receivedMessage.channel.send("I dont know that one. You should try the !help command.");
     }
 }
 
-function helpCommand(arguments, receivedMessage) {
+function helpCommand(args, receivedMessage) {
     receivedMessage.channel.send(`Here is what I can do: \n !8ball - ask a question, \n !rollbones - will roll 2 6 sided dice OR you can pass a value for side of die (!rollbones 8), \n !insult - random insult or randomly insult someone like !insult @NAME, \n !fortune - get your fortune`);
 }
 
-function insult(arguments, receivedMessage) {
+function insult(args, receivedMessage) {
     https.get('https://evilinsult.com/generate_insult.php?lang=en&type=json', (resp) => {
         let data = '';
         resp.on('data', (chunk) => {
@@ -81,16 +93,12 @@ function insult(arguments, receivedMessage) {
         // The whole response has been received. Print out the result.
         resp.on('end', () => {
             let insultObj = JSON.parse(data);
-            console.log(arguments);
-            console.log(arguments[0].indexOf('@'));
             let name = '';
-            if (arguments[0].indexOf('@') > -1){
-                console.log('YES');
-                name = arguments[0];
+            if (args[0] != null || args[0] != undefined && args[0].indexOf('@') > -1){
+                name = args[0];
             }
             else {
-                arguments.forEach((arg,i) => {
-                    console.log(arg);
+                args.forEach((arg) => {
                     name = name + arg + ' ';
                 });
                 name = name.slice(0, -1);
@@ -103,7 +111,7 @@ function insult(arguments, receivedMessage) {
 
 }
 
-function fortuneCookie (arguments, receivedMessage) {
+function fortuneCookie (args, receivedMessage) {
     let fortune = getFortuneCookieSaying();
     receivedMessage.channel.send(fortune);
 }
@@ -471,22 +479,22 @@ function getFortuneCookieSaying() {
     return fortuneArray[Math.floor(Math.random()*fortuneArray.length)];
 }
 
-function rollDice(arguments, receivedMessage) {
-    if (arguments == 0){
+function rollDice(args, receivedMessage) {
+    if (args == 0){
         const die1 = Math.floor(Math.random() * 6) + 1;
         const die2 = Math.floor(Math.random() * 6) + 1;
         const diceTotal = die1 + die2;
         receivedMessage.channel.send(`Rolling two six sided dice... \n Die 1 is ${die1} \n Die 2 is ${die2} \n total ${diceTotal}`);
     }
     else {
-        const die1 = Math.floor(Math.random() * arguments[0]) + 1;
-        const die2 = Math.floor(Math.random() * arguments[0]) + 1;
+        const die1 = Math.floor(Math.random() * args[0]) + 1;
+        const die2 = Math.floor(Math.random() * args[0]) + 1;
         const diceTotal = die1 + die2;
         receivedMessage.channel.send(`Rolling two six sided dice... \n Die 1 is ${die1} \n Die 2 is ${die2} \n total ${diceTotal}`);
     }
 }
 
-function eightBall(arguments, receivedMessage) {
+function eightBall(args, receivedMessage) {
     const eightBallArray = [
         "As I see it, yes.",
         "Ask again later.",
@@ -519,4 +527,4 @@ function eightBall(arguments, receivedMessage) {
     }
  }
 
-client.login("TOKEN");
+client.login(`${process.env.Token}`);
