@@ -67,7 +67,7 @@ function processCommand(receivedMessage) {
     else if (primaryCommand == "rollbones") {
         rollDice(args, receivedMessage);
     }
-    else if (primaryCommand == "cookie") {
+    else if (primaryCommand == "fortune") {
         fortuneCookie(args, receivedMessage);
     }
     else if (primaryCommand == "insult") {
