@@ -16,8 +16,7 @@ setInterval(() => {
 
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
-    const job1 = cron.job('13 9 * * *', () => console.log('STUFF'));
-  job1.start();
+
     //This should fire every Friday at 3:30pm
     const job = cron.job('30 15 * * 5', () => sendReminder());
     job.start();
