@@ -7,14 +7,6 @@ const express = require('express');
 const app = express();
 const { fortunes, eightBall } = require('./contents.json');
 
-app.get("/", (request, response) => {
-  response.sendStatus(200);
-});
-app.listen(process.env.PORT);
-setInterval(() => {
-  http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
-}, 280000);
-
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
 
@@ -68,7 +60,7 @@ function processCommand(receivedMessage) {
       getEightBall(args, receivedMessage);
       break;
     case 'rollbones':
-       rollDice(args, receivedMessage);
+      rollDice(args, receivedMessage);
       break;
     case 'fortune':
       fortuneCookie(args, receivedMessage);
