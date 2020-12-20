@@ -5,30 +5,28 @@ const cron = require('cron');
 const http = require('http');
 const express = require('express');
 const app = express();
-const { fortunes, eightBall } = require('./contents.json');
+const { fortunes, eightBall, reminder } = require('./contents.json');
 
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
-
-    //This should fire every Friday at 3:30pm
-    const job = cron.job('30 15 * * 5', () => sendReminder());
+    
+    const job = cron.job('15 30 15 * * 5', () => sendReminder() );
     job.start();
 });
 
 function sendReminder() {
     const chatId = getChatId();
     let generalChannel = client.channels.cache.get(chatId);
-    const attachment = new Discord.MessageAttachment("https://media.giphy.com/media/7hJKMp9jWM89O/giphy.gif");
-    generalChannel.send("We jiggilin tonight?", {files: [attachment]});
+    let reminderResponse = reminder[Math.floor(Math.random()*reminder.length)]; 
+    const attachment = new Discord.MessageAttachment(reminderResponse);
+    generalChannel.send("We jigglin or we jigglin?", {files: [attachment]});
 }
 
 function getChatId() {
     let chatId = '';
     client.guilds.cache.forEach((guild) => { 
-        //console.log(guild.name);
         guild.channels.cache.forEach((channel) => {
-            //console.log(` - ${channel.name} ${channel.type} ${channel.id}`);
-            if (channel.name == "the-sigal-way" && channel.type == "text" ){
+            if (channel.name == "friday-night-links" && channel.type == "text" ){
                 chatId = chatId + channel.id;
             }
         })
@@ -49,7 +47,7 @@ client.on('message', (receivedMessage) => {
 function processCommand(receivedMessage) {
   let fullCommand = receivedMessage.content;
   let splitCommand = fullCommand.split(" ");
-  let primaryCommand = splitCommand[1];
+  let primaryCommand = splitCommand[1] !== '' ?  splitCommand[1] : splitCommand[2];
   let args = splitCommand.slice(2);
   
   switch (primaryCommand) {
@@ -94,7 +92,9 @@ function insult(args, receivedMessage) {
             }
             else {
                 args.forEach((arg) => {
-                    name = name + arg + ' ';
+                    if (arg != "insult") {
+                        name = name + arg + ' ';
+                    }
                 });
                 name = name.slice(0, -1);
             }
@@ -103,7 +103,6 @@ function insult(args, receivedMessage) {
     }).on("error", (err) => {
         console.log(`Error: ${err.message}`);
     });
-
 }
 
 function fortuneCookie (args, receivedMessage) {
@@ -116,9 +115,15 @@ function getFortuneCookieSaying() {
 }
 
 function rollDice(args, receivedMessage) {
-    if (args == 0){
+    if (args == 0 || (args[0] == "rollbones" && args[1] == undefined)){
         const die1 = Math.floor(Math.random() * 6) + 1;
         const die2 = Math.floor(Math.random() * 6) + 1;
+        const diceTotal = die1 + die2;
+        receivedMessage.channel.send(`Rolling two six sided dice... \n Die 1 is ${die1} \n Die 2 is ${die2} \n total ${diceTotal}`);
+    }
+    else if (args[0] == "rollbones" && args[1] != undefined) {
+        const die1 = Math.floor(Math.random() * args[1]) + 1;
+        const die2 = Math.floor(Math.random() * args[1]) + 1;
         const diceTotal = die1 + die2;
         receivedMessage.channel.send(`Rolling two six sided dice... \n Die 1 is ${die1} \n Die 2 is ${die2} \n total ${diceTotal}`);
     }
@@ -131,15 +136,18 @@ function rollDice(args, receivedMessage) {
 }
 
 function getEightBall(args, receivedMessage) {
-    if (args == 0) {
+    if (args == 0 || (args[0] == "8ball" && args[1] == undefined)) {
         receivedMessage.channel.send("What is your question?");
         return;
     }
     else {
+        if (args[0] == "8ball") {
+            args.shift();
+        }
         let question = args.join(" ");
         let eightBallResponse = eightBall[Math.floor(Math.random()*eightBall.length)]; 
         receivedMessage.channel.send(`You asked: ${question} \n Magic 8Ball says: ${eightBallResponse}`);
     }
- }
+}
 
 client.login(`${process.env.Token}`);
