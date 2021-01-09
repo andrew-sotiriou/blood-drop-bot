@@ -5,7 +5,7 @@ const cron = require('cron');
 const http = require('http');
 const express = require('express');
 const app = express();
-const { fortunes, eightBall, reminder } = require('./contents.json');
+const { fortunes, eightBall, reminder, insulter } = require('./contents.json');
 
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
@@ -66,6 +66,9 @@ function processCommand(receivedMessage) {
     case 'insult':
       insult(args, receivedMessage);
       break;
+    case 'randNum':
+      randNum(args, receivedMessage);
+      break; 
     default:
       receivedMessage.channel.send("I dont know that one. You should try the help command.");
       break;
@@ -73,36 +76,55 @@ function processCommand(receivedMessage) {
 }
 
 function helpCommand(args, receivedMessage) {
-    receivedMessage.channel.send(`Here is what I can do: \n 8ball - ask a question, \n rollbones - will roll 2 6 sided dice OR you can pass a value for side of die (rollbones 8), \n insult - random insult or randomly insult someone like insult @NAME, \n fortune - get your fortune`);
+    receivedMessage.channel.send(`Here is what I can do: \n 8ball - ask a question, \n rollbones - will roll 2 6 sided dice OR you can pass a value for side of die (rollbones 8), \n insult - random insult or randomly insult someone like insult @NAME, \n fortune - get your fortune, \n randNum - get a default random value between 1 and 2 OR you can pass the range from 0-X (randNum 10)`);
+}
+
+function randNum(args, receivedMessage) {
+    let num = parseInt(args[0], 10);
+    if (Object.keys(args).length === 0) {
+        num = 2;
+    }
+    let randomNum = Math.floor(Math.random() * num) + 1;
+    receivedMessage.channel.send(`Your random number is: ${randomNum}`);
 }
 
 function insult(args, receivedMessage) {
-    https.get('https://evilinsult.com/generate_insult.php?lang=en&type=json', (resp) => {
-        let data = '';
-        resp.on('data', (chunk) => {
-            data += chunk;
+    let insulting = '';
+    let preface = 'Thou';
+    let firstInsultPart = getFirstInsult();
+    let secondInsultPart = getSecondInsult();
+    let thirdInsultPart = getThirdInsult();
+    let name = '';
+    if ((args[0] != null || args[0] != undefined) && args[0].indexOf('@') > -1) {
+        name = args[0];
+    }
+    else {
+        args.forEach((arg) => {
+            if (arg != "insult") {
+                name = name + arg + ' ';
+            }
         });
+        name = name.slice(0, -1);
+    }
+    
+    if (name !== '') {
+        preface = `${name} thou art a`;
+    }
 
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
-            let insultObj = JSON.parse(data);
-            let name = '';
-            if ((args[0] != null || args[0] != undefined) && args[0].indexOf('@') > -1) {
-                name = args[0];
-            }
-            else {
-                args.forEach((arg) => {
-                    if (arg != "insult") {
-                        name = name + arg + ' ';
-                    }
-                });
-                name = name.slice(0, -1);
-            }
-            receivedMessage.channel.send(name + " " + insultObj.insult); 
-        });
-    }).on("error", (err) => {
-        console.log(`Error: ${err.message}`);
-    });
+    insulting = `${preface} ${firstInsultPart} ${secondInsultPart} ${thirdInsultPart}`;
+    receivedMessage.channel.send(insulting); 
+}
+
+function getFirstInsult(){
+    return insulter.first[Math.floor(Math.random()*insulter.first.length)];
+}
+
+function getSecondInsult(){
+    return insulter.second[Math.floor(Math.random()*insulter.second.length)];
+}
+
+function getThirdInsult(){
+    return insulter.third[Math.floor(Math.random()*insulter.third.length)];
 }
 
 function fortuneCookie (args, receivedMessage) {
