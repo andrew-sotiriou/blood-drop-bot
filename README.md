@@ -12,3 +12,4 @@ Allow users to interact with the bot by doing an @BOT [command]:
 @bot rollbones - will roll 2 6 sided dice OR you can pass a value for side of die (@bot rollbones 8)  
 @bot insult - uses an api to get a random insult or randomly insult someone like @bot insult @NAME  
 @bot fortune - will tell you your fortune
+@bot randNum - get a default random value between 1 and 2 OR you can pass the range from 0-X (@bot randNum 10)
