@@ -136,18 +136,30 @@ function getFortuneCookieSaying() {
     return fortunes[Math.floor(Math.random()*fortunes.length)];
 }
 
-function rollDice(args, receivedMessage) {
-    if (args == 0 || (args[0] == "rollbones" && args[1] == undefined)){
+function rollDice(args, receivedMessage) {  
+    if (args[0] == undefined) {
         const die1 = Math.floor(Math.random() * 6) + 1;
-        const die2 = Math.floor(Math.random() * 6) + 1;
-        const diceTotal = die1 + die2;
-        receivedMessage.channel.send(`Rolling two six sided dice... \n Die 1 is ${die1} \n Die 2 is ${die2} \n total ${diceTotal}`);
+        const diceTotal = die1;
+        receivedMessage.channel.send(`Rolling one six sided die... \n Die 1 is ${die1} \n total ${diceTotal}`);
     }
-    else if (args[0] == "rollbones" && args[1] != undefined) {
-        const die1 = Math.floor(Math.random() * args[1]) + 1;
-        const die2 = Math.floor(Math.random() * args[1]) + 1;
-        const diceTotal = die1 + die2;
-        receivedMessage.channel.send(`Rolling two six sided dice... \n Die 1 is ${die1} \n Die 2 is ${die2} \n total ${diceTotal}`);
+    else if (args[0] != undefined) {
+        let argers = args[0].split("d");
+        var dice = parseInt(argers[0], 10);
+        var sides = parseInt(argers[1], 10);
+        let diceTotal = 0;
+        let displayText = `Rolling ${dice} ${sides} sided dice... \n`;
+        let result = [];
+        for (let i = 0; i < dice; i++) {
+            let roll = Math.floor(Math.random() * sides) + 1;
+            result.push(roll);
+        }
+        result.forEach( (value, i) => {
+            let dieVal= parseInt(value, 10);
+            displayText = displayText + `Die${i+1} is ${dieVal} \n`;
+            diceTotal = diceTotal + dieVal;
+        });
+        displayText = displayText + `total ${diceTotal}`;
+        receivedMessage.channel.send(displayText);
     }
     else {
         const die1 = Math.floor(Math.random() * args[0]) + 1;
