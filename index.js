@@ -76,7 +76,7 @@ function processCommand(receivedMessage) {
 }
 
 function helpCommand(args, receivedMessage) {
-    receivedMessage.channel.send(`Here is what I can do: \n 8ball - ask a question, \n rollbones - will roll 2 6 sided dice OR you can pass a value for side of die (rollbones 8), \n insult - random insult or randomly insult someone like insult @NAME, \n fortune - get your fortune, \n randNum - get a default random value between 1 and 2 OR you can pass the range from 0-X (randNum 10)`);
+    receivedMessage.channel.send(`Here is what I can do: \n 8ball - ask a question, \n rollbones - will roll 2 6 sided dice OR you can pass a value for side of die (rollbones 4d8), \n insult - random insult or randomly insult someone like insult @NAME, \n fortune - get your fortune, \n randNum - get a default random value between 1 and 2 OR you can pass the range from 0-X (randNum 10)`);
 }
 
 function randNum(args, receivedMessage) {
