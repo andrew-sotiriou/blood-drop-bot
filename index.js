@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"] });
+//, "GUILD_WEBHOOKS", "GUILD_PRESENCES", "GUILD_SCHEDULED_EVENTS"
 const https = require('https');
 const cron = require('cron');
 const http = require('http');
@@ -184,4 +185,5 @@ function getEightBall(args, receivedMessage) {
     }
 }
 
-client.login(`${process.env.Token}`);
+// client.login(`${process.env.Token}`);
+client.login('NzQ5NjU2MzMzNDg1MzQyODIy.X0vJ3Q.oanVBMixFgD3Wm-Ax3AnTD7UmjA');
