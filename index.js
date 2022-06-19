@@ -10,17 +10,28 @@ const { fortunes, eightBall, reminder, insulter } = require('./contents.json');
 
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
-    
-    const job = cron.job('15 30 15 * * 5', () => sendReminder() );
+    //confirm this will work
+    // const job = cron.job('15 30 15 * * 5', () => sendReminder() );
+    const job = cron.job('* 32 * * * *', () => sendReminder() );
     job.start();
 });
 
 function sendReminder() {
-    const chatId = getChatId();
-    let generalChannel = client.channels.cache.get(chatId);
+    // const chatId = getRocketChatId();// getChatId();
+    // let generalChannel = client.channels.cache.get(chatId);
     let reminderResponse = reminder[Math.floor(Math.random()*reminder.length)]; 
-    const attachment = new Discord.MessageAttachment(reminderResponse);
-    generalChannel.send("We jigglin or we jigglin?", {files: [attachment]});
+    const attachment = new Discord.MessageAttachment(reminderResponse).attachment;
+
+    // attachment is an object
+    //not sending an image
+    client.channels.fetch("987911703012458517")
+        .then(channel => channel.send(
+            {
+                content: "We jigglin or we jigglin?", 
+                files: [{attachment:attachment, name: 'file.gif'}]
+            })
+        );
+    // generalChannel.send("We jigglin or we jigglin?", {files: [attachment]});
 }
 
 function getChatId() {
@@ -50,6 +61,7 @@ function getRocketChatId() {
 client.on('presenceUpdate', (oldPresence, newPresence) => {
     let person = newPresence.userId;
     console.log(newPresence.members);
+    ///set this up to deliver a msg to rocket-league channel
     client.channels.fetch("987911703012458517").then(channel => channel.send(`@rocket LETS GOOOO!!!!!`));
     // newPresence.activities.forEach(activity => {
     //     if (activity.name === "Rocket League" && activity.type === "Playing"){
@@ -213,5 +225,4 @@ function getEightBall(args, receivedMessage) {
     }
 }
 
-// client.login(`${process.env.Token}`);
-client.login('NzQ5NjU2MzMzNDg1MzQyODIy.X0vJ3Q.oanVBMixFgD3Wm-Ax3AnTD7UmjA');
+client.login(`${process.env.Token}`);
