@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"] });
-//, "GUILD_WEBHOOKS", "GUILD_PRESENCES", "GUILD_SCHEDULED_EVENTS"
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"] });
+//, "GUILD_MEMBERS", "GUILD_WEBHOOKS", "GUILD_PRESENCES", "GUILD_SCHEDULED_EVENTS"
 const https = require('https');
 const cron = require('cron');
 const http = require('http');
@@ -35,7 +35,35 @@ function getChatId() {
     return chatId;
 }
 
-client.on('message', (receivedMessage) => {
+function getRocketChatId() {
+    let chatId = '';
+    client.guilds.cache.forEach((guild) => { 
+        guild.channels.cache.forEach((channel) => {
+            if (channel.name == "rocket" && channel.type == "text" ){
+                chatId = chatId + channel.id;
+            }
+        })
+    });
+    return chatId;
+}
+
+client.on('presenceUpdate', (oldPresence, newPresence) => {
+    let person = newPresence.userId;
+    console.log(newPresence.members);
+    client.channels.fetch("987911703012458517").then(channel => channel.send(`@rocket LETS GOOOO!!!!!`));
+    // newPresence.activities.forEach(activity => {
+    //     if (activity.name === "Rocket League" && activity.type === "Playing"){
+    //         console.log(newPresence);
+    //     }
+    // })
+    // console.log(oldPresence.activities[0].name);
+    // console.log(oldPresence.activities.Activity.type);
+    // console.log('----');
+    // console.log(newPresence.activities[0]);
+    // console.log(newPresence.activities.Activity.type);
+  });
+
+client.on('messageCreate', (receivedMessage) => {
     let checkMention = (receivedMessage.content).split(" ");
     if (receivedMessage.author == client.user) {
         return;
