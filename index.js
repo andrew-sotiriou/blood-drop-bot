@@ -26,10 +26,11 @@ function sendReminder() {
 }
 
 client.on('presenceUpdate', (oldPresence, newPresence) => {
-    const RLChatId = "813201640961867856";
+    const RLChatId = chatID;
+    const role = roleID;
     newPresence.activities.forEach(activity => {
-        if (activity.name === "Rocket League" && activity.type === "Playing"){
-            client.channels.fetch(RLChatId).then(channel => channel.send(`@rocket LETS GOOOO!!!!!`));
+        if (activity.name === "Rocket League" && activity.type === "PLAYING"){
+            client.channels.fetch(RLChatId).then(channel => channel.send(`${role} LETS GOOOO!!!!!`));
         }
     })
   });
@@ -191,10 +192,14 @@ function annoy(args, receivedMessage) {
     const id = ID;
     const token = TOKEN;
     const webhook = new Discord.WebhookClient({id, token});
-     
+
     let name = '';
     if ((args[0] != null || args[0] != undefined) && args[0].indexOf('@') > -1) {
         name = args[0];
+    }
+    else {
+        receivedMessage.channel.send("You need to add a person to annoy.");
+        return;
     }
 
     let annoyCommand = args[1] !== null ? args[1] : 1;
