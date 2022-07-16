@@ -1,40 +1,41 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"] });
 const https = require('https');
 const cron = require('cron');
 const http = require('http');
 const express = require('express');
 const app = express();
 const { fortunes, eightBall, reminder, insulter } = require('./contents.json');
+const { AnonymousGuild } = require('discord.js');
 
 client.on('ready', () => {
     client.user.setActivity("You", {type: "WATCHING"});
-    
-    const job = cron.job('15 30 15 * * 5', () => sendReminder() );
+    const job = cron.job('15 30 14 * * 5', () => sendReminder() );
     job.start();
 });
 
 function sendReminder() {
-    const chatId = getChatId();
-    let generalChannel = client.channels.cache.get(chatId);
     let reminderResponse = reminder[Math.floor(Math.random()*reminder.length)]; 
-    const attachment = new Discord.MessageAttachment(reminderResponse);
-    generalChannel.send("We jigglin or we jigglin?", {files: [attachment]});
+    const attachment = new Discord.MessageAttachment(reminderResponse).attachment;
+    const embed = new Discord.MessageEmbed().setImage(attachment);
+    const id = ID;
+    const token = TOKEN;
+    const webhook = new Discord.WebhookClient({id, token});
+    webhook.send("We jigglin or we jigglin?").catch(console.error);
+    webhook.send(embed.image.url).catch(console.error);
 }
 
-function getChatId() {
-    let chatId = '';
-    client.guilds.cache.forEach((guild) => { 
-        guild.channels.cache.forEach((channel) => {
-            if (channel.name == "friday-night-links" && channel.type == "text" ){
-                chatId = chatId + channel.id;
-            }
-        })
-    });
-    return chatId;
-}
+client.on('presenceUpdate', (oldPresence, newPresence) => {
+    const RLChatId = chatID;
+    const role = roleID;
+    newPresence.activities.forEach(activity => {
+        if (activity.name === "Rocket League" && activity.type === "PLAYING"){
+            client.channels.fetch(RLChatId).then(channel => channel.send(`${role} LETS GOOOO!!!!!`));
+        }
+    })
+  });
 
-client.on('message', (receivedMessage) => {
+client.on('messageCreate', (receivedMessage) => {
     let checkMention = (receivedMessage.content).split(" ");
     if (receivedMessage.author == client.user) {
         return;
@@ -69,6 +70,9 @@ function processCommand(receivedMessage) {
     case 'randNum':
       randNum(args, receivedMessage);
       break; 
+    case 'annoy':
+      annoy(args, receivedMessage);
+      break;
     default:
       receivedMessage.channel.send("I dont know that one. You should try the help command.");
       break;
@@ -169,7 +173,7 @@ function rollDice(args, receivedMessage) {
     }
 }
 
-function getEightBall(args, receivedMessage) {
+function getEightBall(args, receivedMessage) { 
     if (args == 0 || (args[0] == "8ball" && args[1] == undefined)) {
         receivedMessage.channel.send("What is your question?");
         return;
@@ -182,6 +186,52 @@ function getEightBall(args, receivedMessage) {
         let eightBallResponse = eightBall[Math.floor(Math.random()*eightBall.length)]; 
         receivedMessage.channel.send(`You asked: ${question} \n Magic 8Ball says: ${eightBallResponse}`);
     }
+}
+
+function annoy(args, receivedMessage) {
+    const id = ID;
+    const token = TOKEN;
+    const webhook = new Discord.WebhookClient({id, token});
+
+    let name = '';
+    if ((args[0] != null || args[0] != undefined) && args[0].indexOf('@') > -1) {
+        name = args[0];
+    }
+    else {
+        receivedMessage.channel.send("You need to add a person to annoy.");
+        return;
+    }
+
+    let annoyCommand = args[1] !== null ? args[1] : 1;
+    switch (annoyCommand) {
+        case '2':
+            webhook.send(`${name} don't block (don't block), don't block the bot`);
+            webhook.send(`${name} can't block (can't block), can't block the bot`);
+            webhook.send(`${name} won't block (won't block), won't block the bot`);
+            break;
+        case '3':
+            webhook.send(`So ${name} like to know where, you got the notion`);
+            webhook.send(`Said ${name} like to know where, you got the notion`);
+            webhook.send(`${name} To block the bot (don't block the bot, baby)`);
+            webhook.send(`${name} Don't block the bot (don't block the bot over)`);
+            webhook.send(`${name} Don't block the bot (don't block the bot, baby)`);
+            webhook.send(`${name} Don't block the bot`);
+            break;
+        case '4':
+            webhook.send(`And this is how ${name} cant block me`);
+            webhook.send(`This is how ${name} cant block me`);
+            webhook.send(`Of what ${name} really am`);
+            webhook.send(`This is how ${name} cant block me`);
+            webhook.send(`Of what ${name} really am`);
+            break;
+        default:
+            webhook.send(`${name}, can't block me now`);
+            webhook.send(`${name}, can't block me now`);
+            webhook.send(`${name} is the head that wears the crown`);
+            webhook.send(`${name} singing, ${name} singing`);
+            webhook.send(`${name}, can't block me now`);
+            break;
+    };
 }
 
 client.login(`${process.env.Token}`);
